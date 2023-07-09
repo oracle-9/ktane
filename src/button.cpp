@@ -10,19 +10,19 @@ int main() {
     using fmt::print;
     using namespace fmt::literals;
 
-    constexpr char blue = 'b';
-    constexpr char white = 'w';
-    constexpr char yellow = 'y';
-    constexpr char red = 'r';
+    static constexpr char blue = 'b';
+    static constexpr char white = 'w';
+    static constexpr char yellow = 'y';
+    static constexpr char red = 'r';
 
-    constexpr char abort = 'a';
-    constexpr char detonate = 'd';
-    constexpr char hold = 'h';
+    static constexpr char abort = 'a';
+    static constexpr char detonate = 'd';
+    static constexpr char hold = 'h';
 
-    constexpr char car = 'c';
-    constexpr char frk = 'f';
+    static constexpr char car = 'c';
+    static constexpr char frk = 'f';
 
-    constexpr char neither = '-';
+    static constexpr char neither = '-';
 
     print(
         "Button color?\n"
@@ -85,6 +85,7 @@ int main() {
             std::exit(EXIT_FAILURE);
         }
         battery_count -= '0';
+        return battery_count;
     };
 
     auto indicator_label = [] -> char {
@@ -106,7 +107,7 @@ int main() {
         case car:
         case frk:
         case neither:
-            return indicator_label;
+            return static_cast<char>(indicator_label);
         default:
             print(stderr, "invalid indicator label.\n");
             std::exit(EXIT_FAILURE);
@@ -130,12 +131,18 @@ int main() {
     }
 
 RELEASING_A_HELD_BUTTON:
-    print("Hold the button. What color is the strip?\n"
-          "{blue}: blue\n"
-          "{white}: white\n"
-          "{yellow}: yellow\n"
-          "{neither}: neither\n"
-          "> ");
+    print(
+        "Hold the button. What color is the strip?\n"
+        "{blue}: blue\n"
+        "{white}: white\n"
+        "{yellow}: yellow\n"
+        "{neither}: neither\n"
+        "> ",
+        "blue"_a = blue,
+        "white"_a = white,
+        "yellow"_a = yellow,
+        "neither"_a = neither
+    );
     switch (int strip_color = getchar_sane(); strip_color) {
     case blue:
         print("Release when the countdown timer has a 4 in any position.\n");
