@@ -29,7 +29,8 @@ int main() {
         "{white}: white\n"
         "{yellow}: yellow\n"
         "{red}: red\n"
-        "{neither}: neither\n",
+        "{neither}: neither\n"
+        "> ",
         "blue"_a = blue,
         "white"_a = white,
         "yellow"_a = yellow,
@@ -53,7 +54,8 @@ int main() {
         "Button text?\n"
         "{abort}: Abort\n"
         "{detonate}: Detonate\n"
-        "{hold}: Hold\n",
+        "{hold}: Hold\n"
+        "> ",
         "abort"_a = abort,
         "detonate"_a = detonate,
         "hold"_a = hold
@@ -69,7 +71,8 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    print("Number of batteries? [0-9]\n");
+    print("Number of batteries? [0-9]\n"
+          "> ");
     int battery_count = getchar_sane();
     if (not std::isdigit(battery_count)) {
         print(stderr, "invalid number of batteries.\n");
@@ -81,7 +84,8 @@ int main() {
         "Indicator label?\n"
         "{car}: CAR\n"
         "{frk}: FRK\n"
-        "{neither}: neither\n",
+        "{neither}: neither\n"
+        "> ",
         "car"_a = car,
         "frk"_a = frk,
         "neither"_a = neither
@@ -114,9 +118,13 @@ int main() {
     }
 
 RELEASING_A_HELD_BUTTON:
-    print("Hold the button. What color is the strip?\n");
-    int strip_color = getchar_sane();
-    switch (strip_color) {
+    print("Hold the button. What color is the strip?\n"
+          "{blue}: blue\n"
+          "{white}: white\n"
+          "{yellow}: yellow\n"
+          "{neither}: neither\n"
+          "> ");
+    switch (int strip_color = getchar_sane(); strip_color) {
     case blue:
         print("Release when the countdown timer has a 4 in any position.\n");
         break;
