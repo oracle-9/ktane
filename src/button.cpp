@@ -2,6 +2,7 @@
 
 #include <cctype>       // std::isdigit
 #include <cstdio>       // stderr, EOF
+#include <cstdlib>      // std::exit
 #include <fmt/core.h>   // fmt::print
 #include <fmt/format.h> // fmt::literals
 
@@ -71,43 +72,54 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    print("Number of batteries? [0-9]\n"
-          "> ");
-    int battery_count = getchar_sane();
-    if (not std::isdigit(battery_count)) {
-        print(stderr, "invalid number of batteries.\n");
-        return EXIT_FAILURE;
-    }
-    battery_count -= '0';
+    auto battery_count = [] -> int {
+        static int battery_count = -1;
+        if (battery_count != -1) {
+            return battery_count;
+        }
+        print("Number of batteries? [0-9]\n"
+              "> ");
+        battery_count = getchar_sane();
+        if (not std::isdigit(battery_count)) {
+            print(stderr, "invalid number of batteries.\n");
+            std::exit(EXIT_FAILURE);
+        }
+        battery_count -= '0';
+    };
 
-    print(
-        "Indicator label?\n"
-        "{car}: CAR\n"
-        "{frk}: FRK\n"
-        "{neither}: neither\n"
-        "> ",
-        "car"_a = car,
-        "frk"_a = frk,
-        "neither"_a = neither
-    );
-    int indicator_label = getchar_sane();
-    switch (indicator_label) {
-    case car:
-    case frk:
-    case neither:
-        break;
-    default:
-        print(stderr, "invalid indicator label.\n");
-        return EXIT_FAILURE;
-    }
+    auto indicator_label = [] -> char {
+        static char indicator_label = '\0';
+        if (indicator_label != '\0') {
+            return indicator_label;
+        }
+        print(
+            "Indicator label?\n"
+            "{car}: CAR\n"
+            "{frk}: FRK\n"
+            "{neither}: neither\n"
+            "> ",
+            "car"_a = car,
+            "frk"_a = frk,
+            "neither"_a = neither
+        );
+        switch (int indicator_label = getchar_sane(); indicator_label) {
+        case car:
+        case frk:
+        case neither:
+            return indicator_label;
+        default:
+            print(stderr, "invalid indicator label.\n");
+            std::exit(EXIT_FAILURE);
+        }
+    };
 
     if (color == blue and text == abort) {
         goto RELEASING_A_HELD_BUTTON;
-    } else if (battery_count > 1 and text == detonate) {
+    } else if (battery_count() > 1 and text == detonate) {
         print("Press and immediately release the button.\n");
-    } else if (color == white and indicator_label == car) {
+    } else if (color == white and indicator_label() == car) {
         goto RELEASING_A_HELD_BUTTON;
-    } else if (battery_count > 2 and indicator_label == frk) {
+    } else if (battery_count() > 2 and indicator_label() == frk) {
         print("Press and immediately release the button.\n");
     } else if (color == yellow) {
         goto RELEASING_A_HELD_BUTTON;
