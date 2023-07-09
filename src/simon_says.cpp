@@ -1,10 +1,11 @@
 #include "getchar_sane.hpp"
 
 #include <array>        // std::end
-#include <cstdio>       // stderr
+#include <cstdio>       // std::size_t, stderr
 #include <cstdlib>      // EXIT_FAILURE, EXIT_SUCCESS
 #include <fmt/core.h>   // fmt::print
 #include <fmt/format.h> // fmt::literals
+#include <ranges>       // std::ranges::views::take
 #include <utility>      // std::unreachable
 
 #define DEFINE_STATE_MACHINE(COL1, COL2, COL3, COL4)                           \
@@ -80,6 +81,7 @@ int main() {
 
     auto next_color = state_machine[serial_has_vowel][strike_count];
     char sequence[5]; // There are either 3 or 5 flashes in the game.
+    std::size_t num_flashes = 0;
 
     for (char& new_color : sequence) {
         using namespace fmt::literals;
@@ -100,6 +102,7 @@ int main() {
         case blue:
         case green:
         case yellow:
+            ++num_flashes;
             new_color = next_color(static_cast<char>(last_color));
             break;
         case EOF:
@@ -109,7 +112,8 @@ int main() {
             return EXIT_FAILURE;
         }
         print(">>> Current sequence:");
-        for (char c : sequence) {
+        using std::ranges::views::take;
+        for (char c : sequence | take(num_flashes)) {
             switch (c) {
             case red:
                 print(" red");
