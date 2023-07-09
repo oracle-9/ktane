@@ -18,19 +18,27 @@ constexpr string_view glyphs[] = {
     "Ԇ", "б", "¶", "Ѣ", "ټ", "Ψ", "Ͼ", "Ѯ", "★", "҂", "æ", "Ҋ", "Ω",
 };
 
-consteval size_t operator""_g(char const* glyph, size_t len) {
-    return static_cast<size_t>(
-        std::ranges::find(glyphs, string_view(glyph, len)) - glyphs
-    );
-}
+// Hacky way to define a 2D array of indices into the glyphs table.
+class Glyph {
+  private:
+    size_t table_idx;
 
-constexpr size_t symbol_rows[][7] = {
-    {"Ϙ"_g, "Ѧ"_g, "ƛ"_g, "Ϟ"_g,  "Ѭ"_g, "ϗ"_g,  "Ͽ"_g},
-    {"Ӭ"_g, "Ϙ"_g, "Ͽ"_g, "Ҩ"_g, "☆"_g, "ϗ"_g,  "¿"_g},
-    {"©"_g, "Ѽ"_g, "Ҩ"_g, "Җ"_g,  "Ѯ"_g, "ƛ"_g, "☆"_g},
-    {"б"_g, "¶"_g, "Ѣ"_g, "Ѭ"_g,  "Җ"_g, "¿"_g,  "ټ"_g},
-    {"Ψ"_g, "ټ"_g, "Ѣ"_g, "Ͼ"_g,  "¶"_g, "Ѯ"_g, "★"_g},
-    {"б"_g, "Ӭ"_g, "҂"_g, "æ"_g,  "Ψ"_g, "Ҋ"_g,  "Ω"_g},
+  public:
+    constexpr explicit(false) Glyph(char const* glyph)
+      : table_idx(static_cast<size_t>(
+          std::ranges::find(glyphs, string_view(glyph)) - glyphs
+      )) {}
+
+    operator size_t() const {
+        return table_idx;
+    }
+} constexpr symbol_rows[][7] = {
+    {"Ϙ", "Ѧ", "ƛ", "Ϟ",  "Ѭ", "ϗ",  "Ͽ"},
+    {"Ӭ", "Ϙ", "Ͽ", "Ҩ", "☆", "ϗ",  "¿"},
+    {"©", "Ѽ", "Ҩ", "Җ",  "Ѯ", "ƛ", "☆"},
+    {"б", "¶", "Ѣ", "Ѭ",  "Җ", "¿",  "ټ"},
+    {"Ψ", "ټ", "Ѣ", "Ͼ",  "¶", "Ѯ", "★"},
+    {"б", "Ӭ", "҂", "æ",  "Ψ", "Ҋ",  "Ω"},
 };
 
 } // namespace
