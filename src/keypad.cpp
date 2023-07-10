@@ -72,7 +72,7 @@ int main() {
             print(stderr, "Missing indices.\n");
             return EXIT_FAILURE;
         }
-        auto [end, err] = std::from_chars(
+        auto [_, err] = std::from_chars(
             token,
             token + std::strlen(token),
             keypad_glyph_idx
