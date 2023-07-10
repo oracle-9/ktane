@@ -1,5 +1,4 @@
 #include <algorithm>   // std::ranges::find
-#include <cctype>      // std::isdigit
 #include <charconv>    // std::from_chars
 #include <clocale>     // std::setlocale, LC_ALL
 #include <cstdio>      // std::fgets, stderr, stdin
