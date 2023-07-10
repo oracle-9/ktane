@@ -101,12 +101,11 @@ int main() {
     );
 
     size_t sorted_glyph_indices[4];
-    size_t* sorted_glyph_indices_iter = sorted_glyph_indices;
-    size_t correct_row_idx;
 
     // Iterate over the rows in the game manual, looking for the row that
     // contains all the glyphs specified by the user.
     for (size_t row_idx = 0; row_idx < std::size(glyph_rows); ++row_idx) {
+        size_t* sorted_glyph_indices_iter = sorted_glyph_indices;
         for (size_t glyph_idx : glyph_rows[row_idx]) {
             for (size_t keypad_idx : keypad_glyph_indices) {
                 if (keypad_idx == glyph_idx) {
@@ -114,15 +113,27 @@ int main() {
 
                     if (sorted_glyph_indices_iter
                         == std::end(sorted_glyph_indices)) {
-                        correct_row_idx = static_cast<size_t>(row_idx);
-                        goto ALL_GLYPHS_FOUND;
+                        static constexpr string_view ordinal_name_of[] = {
+                            "first",
+                            "second",
+                            "third",
+                            "fourth",
+                            "fifth",
+                            "sixth",
+                        };
+                        print(
+                            "Order is '{} {} {} {}' ({} row).\n",
+                            glyphs[sorted_glyph_indices[0]],
+                            glyphs[sorted_glyph_indices[1]],
+                            glyphs[sorted_glyph_indices[2]],
+                            glyphs[sorted_glyph_indices[3]],
+                            ordinal_name_of[row_idx]
+                        );
+                        return EXIT_SUCCESS;
                     }
                 }
             }
         }
-        // If we got here, we didn't find all the glyphs in this row, so we
-        // reset the iterator and try the next row.
-        sorted_glyph_indices_iter = sorted_glyph_indices;
     }
 
     // If we got here, we didn't find all the glyphs in any row. This should
@@ -133,23 +144,4 @@ int main() {
         "Make sure you entered the correct indices.\n"
     );
     return EXIT_FAILURE;
-
-ALL_GLYPHS_FOUND:
-    static constexpr string_view ordinal_name_of[] = {
-        "first",
-        "second",
-        "third",
-        "fourth",
-        "fifth",
-        "sixth",
-    };
-
-    print(
-        "Order is '{} {} {} {}' ({} row).\n",
-        glyphs[sorted_glyph_indices[0]],
-        glyphs[sorted_glyph_indices[1]],
-        glyphs[sorted_glyph_indices[2]],
-        glyphs[sorted_glyph_indices[3]],
-        ordinal_name_of[correct_row_idx]
-    );
 }
