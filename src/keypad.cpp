@@ -8,44 +8,39 @@
 #include <fmt/core.h>  // fmt::print
 #include <string_view> // std::{size, string_view}
 
-namespace {
-
-using std::size_t;
-using std::string_view;
-
-constexpr string_view glyphs[] = {
-    "Ϙ", "Ѧ", "ƛ", "Ϟ", "Ѭ", "ϗ", "Ͽ", "Ӭ", "Ҩ", "☆", "¿", "©", "Ѽ", "Җ",
-    "Ԇ", "б", "¶", "Ѣ", "ټ", "Ψ", "Ͼ", "Ѯ", "★", "҂", "æ", "Ҋ", "Ω",
-};
-
-// Hacky way to define a 2D array of indices into the glyphs table.
-class Glyph {
-  private:
-    size_t table_idx;
-
-  public:
-    constexpr explicit(false) Glyph(char const* glyph)
-      : table_idx(static_cast<size_t>(
-          std::ranges::find(glyphs, string_view(glyph)) - glyphs
-      )) {}
-
-    operator size_t() const {
-        return table_idx;
-    }
-} constexpr symbol_rows[][7] = {
-    {"Ϙ", "Ѧ", "ƛ", "Ϟ",  "Ѭ", "ϗ",  "Ͽ"},
-    {"Ӭ", "Ϙ", "Ͽ", "Ҩ", "☆", "ϗ",  "¿"},
-    {"©", "Ѽ", "Ҩ", "Җ",  "Ѯ", "ƛ", "☆"},
-    {"б", "¶", "Ѣ", "Ѭ",  "Җ", "¿",  "ټ"},
-    {"Ψ", "ټ", "Ѣ", "Ͼ",  "¶", "Ѯ", "★"},
-    {"б", "Ӭ", "҂", "æ",  "Ψ", "Ҋ",  "Ω"},
-};
-
-} // namespace
-
 int main() {
     using fmt::print;
+    using std::size_t;
+    using std::string_view;
     using std::strtok;
+
+    static constexpr string_view glyphs[] = {
+        "Ϙ", "Ѧ", "ƛ", "Ϟ", "Ѭ", "ϗ", "Ͽ", "Ӭ", "Ҩ", "☆", "¿", "©", "Ѽ", "Җ",
+        "Ԇ", "б", "¶", "Ѣ", "ټ", "Ψ", "Ͼ", "Ѯ", "★", "҂", "æ", "Ҋ", "Ω",
+    };
+
+    // Hacky way to define a 2D array of indices into the glyphs table.
+    class Glyph {
+      private:
+        size_t table_idx;
+
+      public:
+        constexpr explicit(false) Glyph(char const* glyph)
+          : table_idx(static_cast<size_t>(
+              std::ranges::find(glyphs, string_view(glyph)) - glyphs
+          )) {}
+
+        operator size_t() const {
+            return table_idx;
+        }
+    } static constexpr glyph_rows[][7] = {
+        {"Ϙ", "Ѧ", "ƛ", "Ϟ",  "Ѭ", "ϗ",  "Ͽ"},
+        {"Ӭ", "Ϙ", "Ͽ", "Ҩ", "☆", "ϗ",  "¿"},
+        {"©", "Ѽ", "Ҩ", "Җ",  "Ѯ", "ƛ", "☆"},
+        {"б", "¶", "Ѣ", "Ѭ",  "Җ", "¿",  "ټ"},
+        {"Ψ", "ټ", "Ѣ", "Ͼ",  "¶", "Ѯ", "★"},
+        {"б", "Ӭ", "҂", "æ",  "Ψ", "Ҋ",  "Ω"},
+    };
 
     std::setlocale(LC_ALL, "");
 
@@ -54,7 +49,7 @@ int main() {
         print("{:2}: {}\n", i, glyphs[i]);
     }
     print(
-        "Keypad symbol indices? (top to bottom, left to right)\n"
+        "Keypad glyph indices? (top to bottom, left to right)\n"
         "example: '{} {} {} {}' for {}, {}, {}, {}.\n>",
         0,
         1,
@@ -112,11 +107,11 @@ int main() {
 
     // Iterate over the rows in the game manual, looking for the row that
     // contains all the glyphs specified by the user.
-    for (size_t row_idx = 0; row_idx < std::size(symbol_rows); ++row_idx) {
-        for (size_t symbol_idx : symbol_rows[row_idx]) {
+    for (size_t row_idx = 0; row_idx < std::size(glyph_rows); ++row_idx) {
+        for (size_t glyph_idx : glyph_rows[row_idx]) {
             for (size_t keypad_idx : keypad_glyph_indices) {
-                if (keypad_idx == symbol_idx) {
-                    *sorted_glyph_indices_iter++ = symbol_idx;
+                if (keypad_idx == glyph_idx) {
+                    *sorted_glyph_indices_iter++ = glyph_idx;
 
                     if (sorted_glyph_indices_iter
                         == std::end(sorted_glyph_indices)) {
@@ -141,7 +136,7 @@ int main() {
     return EXIT_FAILURE;
 
 ALL_GLYPHS_FOUND:
-    static constexpr std::string_view ordinal_name_of[] = {
+    static constexpr string_view ordinal_name_of[] = {
         "first",
         "second",
         "third",
